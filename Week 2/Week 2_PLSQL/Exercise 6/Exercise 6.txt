@@ -1,0 +1,42 @@
+Scenario 1:
+DECLARE
+    CURSOR cur_transactions IS
+        SELECT AccountID, TransactionDate, Amount, TransactionType
+        FROM Transactions
+        WHERE TransactionDate BETWEEN TRUNC(SYSDATE, 'MM') AND LAST_DAY(SYSDATE);
+BEGIN
+    FOR rec IN cur_transactions LOOP
+        DBMS_OUTPUT.PUT_LINE('AccountID: ' || rec.AccountID || ', Date: ' || rec.TransactionDate || ', Amount: ' || rec.Amount || ', Type: ' || rec.TransactionType);
+    END LOOP;
+END;
+/
+
+
+Scenario 2:
+DECLARE
+    CURSOR cur_accounts IS
+        SELECT AccountID, Balance FROM Accounts;
+BEGIN
+    FOR rec IN cur_accounts LOOP
+        UPDATE Accounts
+        SET Balance = Balance - 50,
+            LastModified = SYSDATE
+        WHERE AccountID = rec.AccountID;
+    END LOOP;
+    COMMIT;
+END;
+/
+
+Scenario 3:
+DECLARE
+    CURSOR cur_loans IS
+        SELECT LoanID, InterestRate FROM Loans;
+BEGIN
+    FOR rec IN cur_loans LOOP
+        UPDATE Loans
+        SET InterestRate = rec.InterestRate + 0.5
+        WHERE LoanID = rec.LoanID;
+    END LOOP;
+    COMMIT;
+END;
+/

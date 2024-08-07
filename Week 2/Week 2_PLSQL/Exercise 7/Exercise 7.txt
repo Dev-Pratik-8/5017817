@@ -1,0 +1,97 @@
+Scenario 1:
+CREATE OR REPLACE PACKAGE CustomerManagement IS
+    PROCEDURE AddCustomer(p_customerID IN NUMBER, p_name IN VARCHAR2, p_dob IN DATE, p_balance IN NUMBER);
+    PROCEDURE UpdateCustomerDetails(p_customerID IN NUMBER, p_name IN VARCHAR2, p_dob IN DATE);
+    FUNCTION GetCustomerBalance(p_customerID IN NUMBER) RETURN NUMBER;
+END CustomerManagement;
+/
+
+CREATE OR REPLACE PACKAGE BODY CustomerManagement IS
+    PROCEDURE AddCustomer(p_customerID IN NUMBER, p_name IN VARCHAR2, p_dob IN DATE, p_balance IN NUMBER) IS
+    BEGIN
+        INSERT INTO Customers (CustomerID, Name, DOB, Balance, LastModified)
+        VALUES (p_customerID, p_name, p_dob, p_balance, SYSDATE);
+        COMMIT;
+    END AddCustomer;
+
+    PROCEDURE UpdateCustomerDetails(p_customerID IN NUMBER, p_name IN VARCHAR2, p_dob IN DATE) IS
+    BEGIN
+        UPDATE Customers
+        SET Name = p_name, DOB = p_dob, LastModified = SYSDATE
+        WHERE CustomerID = p_customerID;
+        COMMIT;
+    END UpdateCustomerDetails;
+
+    FUNCTION GetCustomerBalance(p_customerID IN NUMBER) RETURN NUMBER IS
+        v_balance NUMBER;
+    BEGIN
+        SELECT Balance INTO v_balance FROM Customers WHERE CustomerID = p_customerID;
+        RETURN v_balance;
+    END GetCustomerBalance;
+END CustomerManagement;
+/
+
+
+Scenario 2:
+CREATE OR REPLACE PACKAGE EmployeeManagement IS
+    PROCEDURE HireEmployee(p_employeeID IN NUMBER, p_name IN VARCHAR2, p_position IN VARCHAR2, p_salary IN NUMBER, p_department IN VARCHAR2, p_hireDate IN DATE);
+    PROCEDURE UpdateEmployeeDetails(p_employeeID IN NUMBER, p_name IN VARCHAR2, p_position IN VARCHAR2, p_salary IN NUMBER, p_department IN VARCHAR2);
+    FUNCTION CalculateAnnualSalary(p_employeeID IN NUMBER) RETURN NUMBER;
+END EmployeeManagement;
+/
+
+CREATE OR REPLACE PACKAGE BODY EmployeeManagement IS
+    PROCEDURE HireEmployee(p_employeeID IN NUMBER, p_name IN VARCHAR2, p_position IN VARCHAR2, p_salary IN NUMBER, p_department IN VARCHAR2, p_hireDate IN DATE) IS
+    BEGIN
+        INSERT INTO Employees (EmployeeID, Name, Position, Salary, Department, HireDate)
+        VALUES (p_employeeID, p_name, p_position, p_salary, p_department, p_hireDate);
+        COMMIT;
+    END HireEmployee;
+
+    PROCEDURE UpdateEmployeeDetails(p_employeeID IN NUMBER, p_name IN VARCHAR2, p_position IN VARCHAR2, p_salary IN NUMBER, p_department IN VARCHAR2) IS
+    BEGIN
+        UPDATE Employees
+        SET Name = p_name, Position = p_position, Salary = p_salary, Department = p_department
+        WHERE EmployeeID = p_employeeID;
+        COMMIT;
+    END UpdateEmployeeDetails;
+
+    FUNCTION CalculateAnnualSalary(p_employeeID IN NUMBER) RETURN NUMBER IS
+        v_salary NUMBER;
+    BEGIN
+        SELECT Salary * 12 INTO v_salary FROM Employees WHERE EmployeeID = p_employeeID;
+        RETURN v_salary;
+    END CalculateAnnualSalary;
+END EmployeeManagement;
+/
+
+Scenario 3:
+CREATE OR REPLACE PACKAGE AccountOperations IS
+    PROCEDURE OpenAccount(p_accountID IN NUMBER, p_customerID IN NUMBER, p_accountType IN VARCHAR2, p_balance IN NUMBER);
+    PROCEDURE CloseAccount(p_accountID IN NUMBER);
+    FUNCTION GetTotalBalance(p_customerID IN NUMBER) RETURN NUMBER;
+END AccountOperations;
+/
+
+CREATE OR REPLACE PACKAGE BODY AccountOperations IS
+    PROCEDURE OpenAccount(p_accountID IN NUMBER, p_customerID IN NUMBER, p_accountType IN VARCHAR2, p_balance IN NUMBER) IS
+    BEGIN
+        INSERT INTO Accounts (AccountID, CustomerID, AccountType, Balance, LastModified)
+        VALUES (p_accountID, p_customerID, p_accountType, p_balance, SYSDATE);
+        COMMIT;
+    END OpenAccount;
+
+    PROCEDURE CloseAccount(p_accountID IN NUMBER) IS
+    BEGIN
+        DELETE FROM Accounts WHERE AccountID = p_accountID;
+        COMMIT;
+    END CloseAccount;
+
+    FUNCTION GetTotalBalance(p_customerID IN NUMBER) RETURN NUMBER IS
+        v_totalBalance NUMBER;
+    BEGIN
+        SELECT SUM(Balance) INTO v_totalBalance FROM Accounts WHERE CustomerID = p_customerID;
+        RETURN v_totalBalance;
+    END GetTotalBalance;
+END AccountOperations;
+/
